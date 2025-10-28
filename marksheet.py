@@ -1,21 +1,11 @@
-# Python program to create a
-# GUI mark sheet using tkinter
-
-
-# Import tkinter as tk
 import tkinter as tk
-
-
 # creating a new tkinter window
 master = tk.Tk()
-
 # assigning a title
 master.title("MARKSHEET")
 
 # specifying geometry for window size
 master.geometry("700x250")
-
-
 # declaring objects for entering data
 e1 = tk.Entry(master)
 e2 = tk.Entry(master)
@@ -25,56 +15,40 @@ e5 = tk.Entry(master)
 e6 = tk.Entry(master)
 e7 = tk.Entry(master)
 
-
-# function to display the total subject
-# credits total credits and SGPA according
-# to grades entered
 def display():
-
-    # Variable to store total marks
     tot = 0
-
-    # 10*number of subject credits
-    # give total credits for grade A
+ 
     if e4.get() == "A":
 
-        # grid method is used for placing
-        # the widgets at respective positions
-        # in table like structure .
+      
         tk.Label(master, text="40").grid(row=3, column=4)
         tot += 40
 
-    # 9*number of subject credits give
-    # total credits for grade B
+    
     if e4.get() == "B":
         tk.Label(master, text="36").grid(row=3, column=4)
         tot += 36
 
-    # 8*number of subject credits give
-    # total credits for grade C
+    
     if e4.get() == "C":
         tk.Label(master, text="32").grid(row=3, column=4)
         tot += 32
 
-    # 7*number of subject credits
-    # give total credits for grade D
+\
     if e4.get() == "D":
         tk.Label(master, text="28").grid(row=3, column=4)
         tot += 28
 
-    # 6*number of subject credits give
-    # total credits for grade P
+    
     if e4.get() == "P":
         tk.Label(master, text="24").grid(row=3, column=4)
         tot += 24
 
-    # 0*number of subject credits give
-    # total credits for grade F
+
     if e4.get() == "F":
         tk.Label(master, text="0").grid(row=3, column=4)
         tot += 0
 
-    # Similarly doing with other objects
     if e5.get() == "A":
         tk.Label(master, text="40").grid(row=4, column=4)
         tot += 40
@@ -204,8 +178,3 @@ tk.Label(master, text="SGPA").grid(row=8, column=3)
 
 master.mainloop()
 
-
-# This Marksheet can be snapshotted and printed out
-# as a report card for the semester
-
-# This code has been contributed by Soumi Bardhan
