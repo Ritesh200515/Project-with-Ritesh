@@ -18,8 +18,6 @@ This project is an interactive Power BI dashboard created to analyze Apple TV mo
 - Data Visualization
 - SQL (basic)
 
-## 📸 Dashboard Preview
-![Dashboard](dashboard.png)
 
 ## 🚀 How to Use
 1. Download the `.pbix` file
