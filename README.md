@@ -19,10 +19,3 @@ This project is an interactive Power BI dashboard created to analyze Apple TV mo
 - SQL (basic)
 
 
-## 🚀 How to Use
-1. Download the `.pbix` file
-2. Open it in Power BI Desktop
-3. Refresh data if required
-
-## 📌 Author
-Ritesh Gajendra Burange
