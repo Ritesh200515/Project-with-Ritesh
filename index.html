@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kitchen— Your Kitchen Companion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FBF7F0;
+            --terracotta: #C97850;
+            --deep-green: #3E5F4F;
+            --sage: #94A89A;
+            --charcoal: #2C2C2C;
+            --warm-white: #FFFCF7;
+            --burnt-orange: #D85D3E;
+            --olive: #6B7C5B;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--charcoal);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background texture */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(201, 120, 80, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(62, 95, 79, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: ambientMove 20s ease-in-out infinite;
+        }
+        
+        @keyframes ambientMove {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        
+        header {
+            background: var(--warm-white);
+            padding: 2rem 2rem 1.5rem;
+            border-bottom: 3px solid var(--terracotta);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            color: var(--deep-green);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        
+        .tagline {
+            font-family: 'Lora', serif;
+            font-size: 1.1rem;
+            color: var(--terracotta);
+            font-style: italic;
+            animation: fadeInDown 0.8s ease-out 0.2s backwards;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .tool-card {
+            background: var(--warm-white);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+        
+        .tool-card:nth-child(1) { animation-delay: 0.1s; }
+        .tool-card:nth-child(2) { animation-delay: 0.2s; }
+        .tool-card:nth-child(3) { animation-delay: 0.3s; }
+        .tool-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--terracotta), var(--burnt-orange));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(201, 120, 80, 0.15);
+            border-color: var(--sage);
+        }
+        
+        .tool-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .tool-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--deep-green);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .icon {
+            font-size: 2rem;
+            filter: grayscale(0.2);
+        }
+        
+        input, select, button, textarea {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            margin: 0.5rem 0;
+            border: 2px solid var(--sage);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            background: var(--cream);
+            color: var(--charcoal);
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--terracotta);
+            background: var(--warm-white);
+            box-shadow: 0 0 0 3px rgba(201, 120, 80, 0.1);
+        }
+        
+        button {
+            background: var(--terracotta);
+            color: white;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        button:hover {
+            background: var(--burnt-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(216, 93, 62, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .timer-display {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--deep-green);
+            text-align: center;
+            margin: 1.5rem 0;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        
+        .timer-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .timer-controls button {
+            flex: 1;
+        }
+        
+        .converter-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1rem;
+            align-items: end;
+            margin: 1rem 0;
+        }
+        
+        .arrow {
+            font-size: 1.5rem;
+            color: var(--terracotta);
+            margin-bottom: 0.5rem;
+        }
+        
+        .result {
+            background: var(--deep-green);
+            color: var(--warm-white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            font-family: 'Lora', serif;
+            font-size: 1.2rem;
+            text-align: center;
+            animation: slideIn 0.4s ease-out;
+            box-shadow: 0 4px 15px rgba(62, 95, 79, 0.2);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .recipe-result {
+            background: linear-gradient(135deg, var(--warm-white) 0%, var(--cream) 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--terracotta);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .recipe-result h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--deep-green);
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .recipe-result p {
+            font-family: 'Lora', serif;
+            line-height: 1.8;
+            color: var(--charcoal);
+        }
+        
+        .meal-plan {
+            background: var(--warm-white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            border: 2px dashed var(--sage);
+        }
+        
+        .meal-item {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: var(--cream);
+            border-radius: 8px;
+            border-left: 3px solid var(--olive);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .meal-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .meal-time {
+            font-weight: 600;
+            color: var(--deep-green);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        footer {
+            background: var(--deep-green);
+            color: var(--cream);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            font-family: 'Lora', serif;
+        }
+        
+        footer a {
+            color: var(--terracotta);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        footer a:hover {
+            color: var(--burnt-orange);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--sage);
+            font-style: italic;
+        }
+        
+        /* Decorative elements */
+        .decorative-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--sage), transparent);
+            margin: 2rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .converter-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Savory</h1>
+            <p class="tagline">Your personal kitchen companion for culinary adventures</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tools-grid">
+            <!-- Recipe Search -->
+            <div class="tool-card">
+                <h2><span class="icon">🍳</span> Recipe Finder</h2>
+                <input type="text" id="recipeSearch" placeholder="Enter ingredients (e.g., chicken, tomatoes, garlic)">
+                <button onclick="searchRecipe()">Find Recipes</button>
+                <div id="recipeResult"></div>
+            </div>
+
+            <!-- Kitchen Timer -->
+            <div class="tool-card">
+                <h2><span class="icon">⏲️</span> Kitchen Timer</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
+                    <div>
+                        <label style="font-size: 0.85rem; color: var(--sage);">Hours</label>
+                        <input type="number" id="hours" min="0" max="23" value="0" placeholder="0">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.85rem; color: var(--sage);">Minutes</label>
+                        <input type="number" id="minutes" min="0" max="59" value="5" placeholder="5">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.85rem; color: var(--sage);">Seconds</label>
+                        <input type="number" id="seconds" min="0" max="59" value="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="timer-display" id="timerDisplay">00:05:00</div>
+                <div class="timer-controls">
+                    <button onclick="startTimer()">Start</button>
+                    <button onclick="pauseTimer()" style="background: var(--olive);">Pause</button>
+                    <button onclick="resetTimer()" style="background: var(--sage);">Reset</button>
+                </div>
+            </div>
+
+            <!-- Unit Converter -->
+            <div class="tool-card">
+                <h2><span class="icon">⚖️</span> Unit Converter</h2>
+                <div class="converter-row">
+                    <div>
+                        <input type="number" id="convertValue" placeholder="Amount" value="1">
+                        <select id="fromUnit">
+                            <option value="cup">Cup</option>
+                            <option value="tbsp">Tablespoon</option>
+                            <option value="tsp">Teaspoon</option>
+                            <option value="ml">Milliliter</option>
+                            <option value="l">Liter</option>
+                            <option value="oz">Ounce</option>
+                            <option value="lb">Pound</option>
+                            <option value="g">Gram</option>
+                            <option value="kg">Kilogram</option>
+                        </select>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div>
+                        <select id="toUnit">
+                            <option value="ml">Milliliter</option>
+                            <option value="cup">Cup</option>
+                            <option value="tbsp">Tablespoon</option>
+                            <option value="tsp">Teaspoon</option>
+                            <option value="l">Liter</option>
+                            <option value="oz">Ounce</option>
+                            <option value="lb">Pound</option>
+                            <option value="g">Gram</option>
+                            <option value="kg">Kilogram</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="convertUnits()">Convert</button>
+                <div id="conversionResult"></div>
+            </div>
+
+            <!-- Meal Planner -->
+            <div class="tool-card">
+                <h2><span class="icon">📅</span> Meal Planner</h2>
+                <select id="mealTime">
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dinner">Dinner</option>
+                    <option value="Snack">Snack</option>
+                </select>
+                <input type="text" id="mealName" placeholder="What are you planning to cook?">
+                <button onclick="addMeal()">Add to Plan</button>
+                <div class="decorative-line"></div>
+                <div id="mealPlan">
+                    <p class="empty-state">Your meal plan will appear here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Made with ❤️ for home chefs everywhere</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Happy cooking! 🌿</p>
+    </footer>
+
+    <script>
+        // Timer functionality
+        let timerInterval;
+        let timeLeft = 300; // 5 minutes default
+        let isRunning = false;
+
+        function updateTimerDisplay() {
+            const hrs = Math.floor(timeLeft / 3600);
+            const mins = Math.floor((timeLeft % 3600) / 60);
+            const secs = timeLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                const hours = parseInt(document.getElementById('hours').value) || 0;
+                const minutes = parseInt(document.getElementById('minutes').value) || 0;
+                const seconds = parseInt(document.getElementById('seconds').value) || 0;
+                
+                if (timeLeft === 0 || !isRunning) {
+                    timeLeft = hours * 3600 + minutes * 60 + seconds;
+                }
+                
+                if (timeLeft > 0) {
+                    isRunning = true;
+                    timerInterval = setInterval(() => {
+                        timeLeft--;
+                        updateTimerDisplay();
+                        
+                        if (timeLeft <= 0) {
+                            clearInterval(timerInterval);
+                            isRunning = false;
+                            alert('⏰ Time\'s up! Your dish is ready!');
+                            timeLeft = 300;
+                            updateTimerDisplay();
+                        }
+                    }, 1000);
+                }
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            const hours = parseInt(document.getElementById('hours').value) || 0;
+            const minutes = parseInt(document.getElementById('minutes').value) || 0;
+            const seconds = parseInt(document.getElementById('seconds').value) || 0;
+            timeLeft = hours * 3600 + minutes * 60 + seconds;
+            updateTimerDisplay();
+        }
+
+        // Update display when inputs change
+        document.getElementById('hours').addEventListener('input', () => {
+            if (!isRunning) resetTimer();
+        });
+        document.getElementById('minutes').addEventListener('input', () => {
+            if (!isRunning) resetTimer();
+        });
+        document.getElementById('seconds').addEventListener('input', () => {
+            if (!isRunning) resetTimer();
+        });
+
+        // Unit Converter
+        const conversions = {
+            // Volume conversions to ml
+            'cup': 236.588,
+            'tbsp': 14.787,
+            'tsp': 4.929,
+            'ml': 1,
+            'l': 1000,
+            'oz': 29.574,
+            // Weight conversions to grams
+            'lb': 453.592,
+            'g': 1,
+            'kg': 1000
+        };
+
+        function convertUnits() {
+            const value = parseFloat(document.getElementById('convertValue').value);
+            const from = document.getElementById('fromUnit').value;
+            const to = document.getElementById('toUnit').value;
+            
+            if (isNaN(value)) {
+                document.getElementById('conversionResult').innerHTML = 
+                    '<div class="result" style="background: var(--burnt-orange);">Please enter a valid number</div>';
+                return;
+            }
+
+            // Check if converting between compatible types
+            const volumeUnits = ['cup', 'tbsp', 'tsp', 'ml', 'l', 'oz'];
+            const weightUnits = ['lb', 'g', 'kg'];
+            
+            const fromIsVolume = volumeUnits.includes(from);
+            const toIsVolume = volumeUnits.includes(to);
+            const fromIsWeight = weightUnits.includes(from);
+            const toIsWeight = weightUnits.includes(to);
+            
+            if ((fromIsVolume && !toIsVolume) || (fromIsWeight && !toIsWeight)) {
+                document.getElementById('conversionResult').innerHTML = 
+                    '<div class="result" style="background: var(--burnt-orange);">Cannot convert between volume and weight units</div>';
+                return;
+            }
+
+            const result = (value * conversions[from]) / conversions[to];
+            document.getElementById('conversionResult').innerHTML = 
+                `<div class="result">${value} ${from} = ${result.toFixed(2)} ${to}</div>`;
+        }
+
+        // Recipe Search (Mock functionality)
+        function searchRecipe() {
+            const ingredients = document.getElementById('recipeSearch').value;
+            if (!ingredients.trim()) {
+                document.getElementById('recipeResult').innerHTML = 
+                    '<div class="result" style="background: var(--burnt-orange);">Please enter some ingredients</div>';
+                return;
+            }
+
+            // Mock recipe suggestions
+            const recipes = [
+                { name: 'Garlic Herb Chicken', desc: 'A flavorful roasted chicken with aromatic herbs and garlic' },
+                { name: 'Fresh Tomato Pasta', desc: 'Simple pasta with ripe tomatoes, basil, and olive oil' },
+                { name: 'Stir-Fry Vegetables', desc: 'Colorful veggie medley with soy sauce and ginger' }
+            ];
+            
+            const random = recipes[Math.floor(Math.random() * recipes.length)];
+            document.getElementById('recipeResult').innerHTML = 
+                `<div class="recipe-result">
+                    <h3>${random.name}</h3>
+                    <p>${random.desc}</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--sage);">💡 Try searching online for the full recipe!</p>
+                </div>`;
+        }
+
+        // Meal Planner
+        let meals = [];
+
+        function addMeal() {
+            const time = document.getElementById('mealTime').value;
+            const name = document.getElementById('mealName').value;
+            
+            if (!name.trim()) {
+                alert('Please enter a meal name');
+                return;
+            }
+
+            meals.push({ time, name });
+            document.getElementById('mealName').value = '';
+            renderMealPlan();
+        }
+
+        function removeMeal(index) {
+            meals.splice(index, 1);
+            renderMealPlan();
+        }
+
+        function renderMealPlan() {
+            const container = document.getElementById('mealPlan');
+            if (meals.length === 0) {
+                container.innerHTML = '<p class="empty-state">Your meal plan will appear here</p>';
+                return;
+            }
+
+            container.innerHTML = meals.map((meal, index) => `
+                <div class="meal-item">
+                    <div>
+                        <div class="meal-time">${meal.time}</div>
+                        <div style="font-family: 'Lora', serif; margin-top: 0.25rem;">${meal.name}</div>
+                    </div>
+                    <button onclick="removeMeal(${index})" 
+                            style="width: auto; padding: 0.5rem 1rem; background: var(--burnt-orange); font-size: 0.85rem;">
+                        Remove
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Initialize timer display
+        updateTimerDisplay();
+    </script>
+</body>
+</html>
