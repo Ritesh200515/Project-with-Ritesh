@@ -1,0 +1,197 @@
+-- Create Database
+CREATE DATABASE upi_fraud_detection;
+USE upi_fraud_detection;
+
+
+-- Users Table
+
+CREATE TABLE Users(
+user_id INT PRIMARY KEY AUTO_INCREMENT,
+full_name VARCHAR(100),
+phone VARCHAR(15),
+email VARCHAR(100),
+city VARCHAR(50),
+created_at DATE
+);
+
+
+-- Merchants Table
+
+CREATE TABLE Merchants (
+merchant_id INT PRIMARY KEY AUTO_INCREMENT,
+merchant_name VARCHAR(100),
+category VARCHAR(50),
+city VARCHAR(50)
+);
+
+
+-- Devices Table
+
+CREATE TABLE Devices (
+device_id INT PRIMARY KEY AUTO_INCREMENT,
+user_id INT,
+device_type VARCHAR(50),
+device_os VARCHAR(50),
+last_login_city VARCHAR(50),
+FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+
+-- Bank Accounts Table
+
+CREATE TABLE Bank_Accounts (
+account_id INT PRIMARY KEY AUTO_INCREMENT,
+user_id INT,
+bank_name VARCHAR(100),
+account_type VARCHAR(50),
+balance DECIMAL(12,2),
+created_at DATE,
+FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+
+-- Transactions Table
+
+CREATE TABLE Transactions (
+txn_id INT PRIMARY KEY AUTO_INCREMENT,
+sender_account_id INT,
+receiver_account_id INT,
+merchant_id INT NULL,
+amount DECIMAL(12,2),
+txn_time DATETIME,
+txn_type VARCHAR(10),
+status VARCHAR(20),
+device_id INT,
+FOREIGN KEY (sender_account_id) REFERENCES Bank_Accounts(account_id),
+FOREIGN KEY (receiver_account_id) REFERENCES Bank_Accounts(account_id),
+FOREIGN KEY (merchant_id) REFERENCES Merchants(merchant_id),
+FOREIGN KEY (device_id) REFERENCES Devices(device_id)
+);
+-- Login Logs Table
+
+CREATE TABLE Login_Logs (
+log_id INT PRIMARY KEY AUTO_INCREMENT,
+user_id INT,
+login_time DATETIME,
+city VARCHAR(50),
+device_id INT,
+FOREIGN KEY (user_id) REFERENCES Users(user_id),
+FOREIGN KEY (device_id) REFERENCES Devices(device_id)
+);
+
+
+-- Insert Users
+
+INSERT INTO Users (full_name, phone, email, city, created_at) VALUES
+('Rahul Sharma', '9876543210', 'rahul@email.com', 'Mumbai', '2023-01-10'),
+('Priya Mehta', '9123456780', 'priya@email.com', 'Delhi', '2023-02-15'),
+('Amit Verma', '9988776655', 'amit@email.com', 'Pune', '2023-03-01');
+
+
+-- Insert Bank Accounts
+
+INSERT INTO Bank_Accounts (user_id, bank_name, account_type, balance, created_at) VALUES
+(1, 'SBI', 'Savings', 85000, '2023-01-10'),
+(2, 'HDFC', 'Savings', 92000, '2023-02-15'),
+(3, 'ICICI', 'Savings', 15000, '2023-03-01');
+
+
+-- Insert Merchants
+
+INSERT INTO Merchants (merchant_name, category, city) VALUES
+('Amazon', 'Ecommerce', 'Bangalore'),
+('Swiggy', 'Food Delivery', 'Delhi'),
+('Flipkart', 'Ecommerce', 'Mumbai');
+
+
+-- Insert Devices
+
+INSERT INTO Devices (user_id, device_type, device_os, last_login_city) VALUES
+(1, 'Mobile', 'Android', 'Mumbai'),
+(2, 'Mobile', 'iOS', 'Delhi'),
+(3, 'Laptop', 'Windows', 'Pune');
+
+
+-- Insert Transactions
+
+INSERT INTO Transactions
+(sender_account_id, receiver_account_id, merchant_id, amount, txn_time, txn_type, status, device_id)
+VALUES
+(1,2,NULL,5000,'2024-01-10 10:10:00','P2P','SUCCESS',1),
+(1,3,NULL,5200,'2024-01-10 10:10:20','P2P','SUCCESS',1),
+(1,3,NULL,5300,'2024-01-10 10:10:40','P2P','SUCCESS',1),
+(2,1,NULL,75000,'2024-01-11 02:15:00','P2P','SUCCESS',2),
+(3,2,1,1200,'2024-01-12 18:30:00','P2M','SUCCESS',3),
+(1,2,NULL,90000,'2024-01-13 03:20:00','P2P','SUCCESS',1);
+
+
+-- Insert Login Logs
+
+INSERT INTO Login_Logs (user_id, login_time, city, device_id) VALUES
+(1,'2024-01-12 09:00:00','Mumbai',1),
+(1,'2024-01-12 11:00:00','Delhi',1),
+(1,'2024-01-12 01:00:00','Kolkata',1),
+(2,'2024-01-12 08:00:00','Delhi',2);
+
+
+-- Fraud Detection Query 1
+-- Rapid transactions within 1 minute
+
+SELECT sender_account_id,
+DATE_FORMAT(txn_time,'%Y-%m-%d %H:%i') AS minute_slot,
+COUNT(*) AS txn_count
+FROM Transactions
+GROUP BY sender_account_id, minute_slot
+HAVING COUNT(*) >= 3;
+
+
+-- Fraud Detection Query 2
+-- High value midnight transactions
+
+SELECT txn_id, sender_account_id, amount, txn_time
+FROM Transactions
+WHERE HOUR(txn_time) BETWEEN 0 AND 4
+AND amount > 50000;
+
+
+-- Fraud Detection Query 3
+-- Suspicious login locations
+
+SELECT user_id, COUNT(DISTINCT city) AS city_count
+FROM Login_Logs
+GROUP BY user_id
+HAVING COUNT(DISTINCT city) > 2;
+
+
+-- Create Fraud Report View
+
+CREATE VIEW Fraud_Report AS
+SELECT txn_id,
+sender_account_id,
+receiver_account_id,
+amount,
+txn_time,
+CASE
+WHEN amount > 50000 AND HOUR(txn_time) BETWEEN 0 AND 4
+THEN 'High Value Night Transfer'
+WHEN amount > 50000
+THEN 'High Value Transfer'
+WHEN HOUR(txn_time) BETWEEN 0 AND 4
+THEN 'Odd Hour Transaction'
+ELSE 'Normal'
+END AS fraud_reason
+FROM Transactions
+WHERE amount > 50000
+OR HOUR(txn_time) BETWEEN 0 AND 4;
+
+
+-- Indexes for Performance
+
+CREATE INDEX idx_sender ON Transactions(sender_account_id);
+CREATE INDEX idx_time ON Transactions(txn_time);
+CREATE INDEX idx_amount ON Transactions(amount);
+
+
+-- View Fraud Report
+
+SELECT * FROM Fraud_Report;
